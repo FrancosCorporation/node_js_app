@@ -1,10 +1,22 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from "express";
+import './database/index'
+import 'express-async-errors'
+import { router } from './routes'
 
-const app = express();
 
-app.get('/', (request, response) => {
-    return response.json({ mensage: 'e ai carinhasdasda asd ali' })
-})
-console.log("http://localhost:3333")
+const server = express();
+server.use(express.json());
+server.use(router);
 
-app.listen(3333);
+server.use((err: Error, request: Request, response: Response, next: NextFunction) => {
+
+    if (err instanceof Error) {
+        return response.status(400).json({ err: err.message, })
+    }
+    return response.status(500).json({
+        status: "error",
+        message: "Internal Server Error",
+    });
+});
+
+server.listen(process.env.SERVER_PORT, () => console.log('http://localhost:' + process.env.SERVER_PORT + "/"));
