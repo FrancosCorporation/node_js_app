@@ -1,3 +1,14 @@
 node_modules
 dist
+build
 .env
+.env.local
+coverage
+
+# logs
+*.log
+
+# sistema / IDE
+.DS_Store
+Thumbs.db
+.idea/
