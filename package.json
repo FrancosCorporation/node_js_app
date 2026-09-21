@@ -1,13 +1,13 @@
 {
   "name": "node-js-app",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/server.js",
   "author": "Rodolfo",
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --ignore-watch node_modules --no-notify src/server.ts",
-    "dev1": "nodemon -- -r esm -r dotenv/config src/server.ts",
     "test": "jest"
   },
   "devDependencies": {
