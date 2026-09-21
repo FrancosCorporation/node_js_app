@@ -1,12 +1,28 @@
-version: "3.8"
-services: 
-    db:
-        image: mongo:4.2
-        container_name: db
-        restart: always
-        ports:
-            - ${DB_PORT}:27017
-        environment:
-            MONGO_INITDB_DATABASE: ${DB_NAME}
-            MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-            MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+services:
+  app:
+    build: .
+    container_name: node-js-app
+    restart: unless-stopped
+    ports:
+      - "3210:3000"
+    environment:
+      - PORT=3000
+      - SERVER_PORT=3000
+      - MONGO_URI=mongodb://db:27017/appdb?authSource=admin
+      - DB_USER=root
+      - DB_PASS=root
+      - DB_HOST=db
+      - DB_PORT=27017
+      - DB_NAME=appdb
+    depends_on:
+      - db
+  db:
+    image: mongo:4.2
+    container_name: node-js-app-db
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: appdb
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
