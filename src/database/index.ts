@@ -1,17 +1,10 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const { DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME } = process.env
+export async function connectDatabase(uri: string): Promise<void> {
+  mongoose.connection.on("error", (error) => {
+    console.error("MongoDB connection error:", error);
+  });
 
-const uri = process.env.MONGO_URI ||
-    `mongodb://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`;
-mongoose.connect(
-    uri,
-    {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true
-    }
-)
-
-mongoose.connection.on('error', () => console.error('connection error:'))
-mongoose.connection.once('open', () => console.log('database connected'))
+  await mongoose.connect(uri, { serverSelectionTimeoutMS: 10_000 });
+  console.log("Database connected");
+}

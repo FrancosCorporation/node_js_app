@@ -4,25 +4,42 @@ services:
     container_name: node-js-app
     restart: unless-stopped
     ports:
-      - "3210:3000"
+      - "127.0.0.1:3210:3000"
     environment:
-      - PORT=3000
-      - SERVER_PORT=3000
-      - MONGO_URI=mongodb://db:27017/appdb?authSource=admin
-      - DB_USER=root
-      - DB_PASS=root
-      - DB_HOST=db
-      - DB_PORT=27017
-      - DB_NAME=appdb
+      HOST: 0.0.0.0
+      SERVER_PORT: 3000
+      DB_USER: ${DB_USER:?Execute make init to generate local credentials}
+      DB_PASS: ${DB_PASS:?Execute make init to generate local credentials}
+      DB_HOST: db
+      DB_PORT: 27017
+      DB_NAME: ${DB_NAME:-node_js_app}
+      JWT_SECRET: ${JWT_SECRET:?Execute make init to generate a JWT secret}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+
   db:
-    image: mongo:4.2
+    image: mongo:8.0.34
     container_name: node-js-app-db
-    restart: always
+    restart: unless-stopped
     ports:
-      - "27018:27017"
+      - "127.0.0.1:27018:27017"
     environment:
-      MONGO_INITDB_DATABASE: appdb
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
+      DB_USER: ${DB_USER:?Execute make init to generate local credentials}
+      DB_PASS: ${DB_PASS:?Execute make init to generate local credentials}
+      MONGO_INITDB_DATABASE: ${DB_NAME:-node_js_app}
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER:?Execute make init to generate local credentials}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS:?Execute make init to generate local credentials}
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'mongosh --quiet --username "$$DB_USER" --password "$$DB_PASS" --authenticationDatabase admin --eval "quit(db.adminCommand({ping: 1}).ok ? 0 : 1)"'
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  mongo_data:

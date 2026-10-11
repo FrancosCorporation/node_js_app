@@ -1,14 +1,10 @@
-node_modules
-dist
-build
-.env
-.env.local
-coverage
-
-# logs
+node_modules/
+dist/
+build/
+coverage/
+.env*
+!.env.example
 *.log
-
-# sistema / IDE
 .DS_Store
 Thumbs.db
 .idea/

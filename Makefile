@@ -1,16 +1,13 @@
-include .env
+.PHONY: init up down logs
 
-.PHONY: up
+init:
+	node scripts/init-env.mjs
 
-up:
-	docker-compose up -d
+up: init
+	docker compose up -d --build
 
-.PHONY: down
+down: init
+	docker compose down
 
-down:
-	docker-compose down
-
-.PHONY: logs
-
-logs:
-	docker-compose logs -f
+logs: init
+	docker compose logs -f

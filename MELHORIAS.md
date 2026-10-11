@@ -1,6 +1,24 @@
 # MELHORIAS — node_js_app
 
-> **Gerado por análise de código em 2026-10-05** · Stack: TypeScript + Express + Jest + Docker · Branch: `master`
+> **Atualizado em 2026-10-11.** O diagnóstico detalhado das seções seguintes foi escrito em 2026-10-05 e está mantido como histórico. O resumo abaixo registra o estado atual após a implementação.
+
+## Resultado da implementação
+
+- Corrigida a URI do Mongo: `MONGO_URI` continua opcional; sem ela, a aplicação monta a conexão com credenciais escapadas por URL.
+- Adicionado carregamento e validação de ambiente no início do processo. `make init` gera `.env` aleatório com modo `0600` e mantém um arquivo já existente.
+- Substituído MD5 por bcrypt com custo 12 sobre digest SHA-256 de tamanho fixo. Hashes MD5 existentes são comparados em tempo constante e atualizados no primeiro login válido.
+- Implementados `POST /sessions` com JWT HS256 por uma hora e `GET /users/me` protegido. Cadastro continua público, com limite por IP.
+- Cadastro valida nome, e-mail e senha; erros de dados, e-mail duplicado, JSON inválido e falhas inesperadas recebem status e mensagens adequados.
+- Respostas de cadastro, login e perfil não incluem o hash da senha. Adicionados Helmet, limite de JSON, endpoint de saúde e encerramento gracioso.
+- Atualizados Node do container para 24, Express para 5, Mongoose para 9 e MongoDB para 8.0.34; credenciais geradas por instalação e portas vinculadas ao loopback.
+- Adicionados healthchecks e dependência condicionada à saúde do banco; removidas dependências não usadas e configurações Babel/Jest sem testes, e reparado o lint com ESLint atual.
+- O README foi refeito para descrever o setup, rotas, limites e cautela de migração do banco.
+
+Verificações executadas: `npm run build`, `npm run lint`, `npm audit --audit-level=low`, `docker compose config --quiet` e `git diff --check`. A auditoria encontrou zero vulnerabilidades. Nenhum teste foi adicionado ou executado. Os containers não foram iniciados neste ambiente.
+
+Limitações restantes: ainda não há suíte de testes; rate limits usam memória local e não compartilham contadores entre réplicas; não há fluxo de recuperação de senha nem revogação imediata de tokens antes do vencimento.
+
+As seções abaixo são a análise e proposta originais, anteriores às mudanças, e servem apenas como histórico de planejamento.
 
 ## 0. Como usar este documento
 
