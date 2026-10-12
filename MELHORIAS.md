@@ -1,6 +1,6 @@
 # MELHORIAS — node_js_app
 
-> **Atualizado em 2026-10-11.** O diagnóstico detalhado das seções seguintes foi escrito em 2026-10-05 e está mantido como histórico. O resumo abaixo registra o estado atual após a implementação.
+> **Atualizado em 2026-10-12.** O diagnóstico detalhado das seções seguintes foi escrito em 2026-10-05 e está mantido como histórico. O resumo abaixo registra o estado atual após a implementação.
 
 ## Resultado da implementação
 
@@ -12,9 +12,10 @@
 - Respostas de cadastro, login e perfil não incluem o hash da senha. Adicionados Helmet, limite de JSON, endpoint de saúde e encerramento gracioso.
 - Atualizados Node do container para 24, Express para 5, Mongoose para 9 e MongoDB para 8.0.34; credenciais geradas por instalação e portas vinculadas ao loopback.
 - Adicionados healthchecks e dependência condicionada à saúde do banco; removidas dependências não usadas e configurações Babel/Jest sem testes, e reparado o lint com ESLint atual.
+- Adicionada CI estática para Node 22/24 com lint, build, auditoria npm e validação da configuração Compose; o workflow não executa testes nem sobe serviços.
 - O README foi refeito para descrever o setup, rotas, limites e cautela de migração do banco.
 
-Verificações executadas: `npm run build`, `npm run lint`, `npm audit --audit-level=low`, `docker compose config --quiet` e `git diff --check`. A auditoria encontrou zero vulnerabilidades. Nenhum teste foi adicionado ou executado. Os containers não foram iniciados neste ambiente.
+Verificações executadas: `npm run build`, `npm run lint`, `npm audit --audit-level=low`, `docker compose config --quiet` e `git diff --check`. A auditoria encontrou zero vulnerabilidades. CI `PENDENTE` em Node 22/24. Nenhum teste foi adicionado ou executado. Os containers não foram iniciados neste ambiente.
 
 Limitações restantes: ainda não há suíte de testes; rate limits usam memória local e não compartilham contadores entre réplicas; não há fluxo de recuperação de senha nem revogação imediata de tokens antes do vencimento.
 
@@ -75,6 +76,7 @@ API pequena e organizada (6 arquivos em `src/`, camadas controller/service/model
 | SEC-2 | [P1] | Segurança | Nenhuma autenticação/autorização em nenhuma rota |
 | BUG-3 | [P1] | Runtime | `dotenv` nunca carregado — env vars só existem no Docker |
 | DEVOPS-1 | [P1] | Infra | Mongo 4.2 EOL + porta do banco publicada + root/root fixo |
+| DEVOPS-4 | [P1] | CI | Build, lint, audit e validação Compose sem workflow automático |
 | TEST-1 | [P1] | Testes | Zero arquivos de teste |
 | BUG-4 | [P2] | Bugs | `err.message` cru no cliente; e-mail duplicado vira 400 com texto do Mongo |
 | SEC-3 | [P2] | Segurança | E-mail sem validação de formato |
@@ -333,10 +335,11 @@ cd /home/servidor/Git/node_js_app && grep -rn 'process.env' src/ && echo '--- .e
 10. **SEC-3** — validação de e-mail (cobre-se com o teste criado em TEST-1).
 11. **IMP-3** — ESLint funcional + script `lint`.
 
-**Wave 3 — limpeza e docs (1 sessão):**
+**Wave 3 — limpeza, docs e CI (1 sessão):**
 12. **IMP-1**, **IMP-2**, **IMP-4** — dependências e código morto.
 13. **DEVOPS-2**, **DEVOPS-3** — healthcheck e `make` tolerante.
 14. **DOC-1**, **DOC-2** — README/`.env.example` alinhados ao código já corrigido.
+15. **DEVOPS-4** — workflow de lint/build/audit/Compose sem executar testes ou serviços.
 
 Dependências explícitas: BUG-2 → TEST-1 → TEST-2; TEST-1 → SEC-1/SEC-3/BUG-4 (testes antes/depois da mudança); DOC-1/DOC-2 depois de BUG-3.
 
@@ -368,6 +371,7 @@ O plano está concluído quando **todos** os pontos abaixo forem verdadeiros, ve
 9. `npx eslint src --ext .ts` roda sem erro de config (**IMP-3**); `grep` de `restify|typeorm|nodemon|esm` vazio em `package.json` (**IMP-1**).
 10. Clone novo sem `.env`: `make up` funciona (**DEVOPS-3**); todos os comandos do README rodam (**DOC-1**) e `.env.example` bate com `process.env` lido em `src/` (**DOC-2**).
 11. `python3 /tmp/validate.py node_js_app` → **OK**.
+12. A CI Node 22/24 conclui lint, build, audit e configuração Compose sem executar testes ou serviços (**DEVOPS-4**).
 
 ---
 
