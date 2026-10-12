@@ -15,7 +15,7 @@
 - Adicionada CI estática para Node 22/24 com lint, build, auditoria npm e validação da configuração Compose; o workflow não executa testes nem sobe serviços.
 - O README foi refeito para descrever o setup, rotas, limites e cautela de migração do banco.
 
-Verificações executadas: `npm run build`, `npm run lint`, `npm audit --audit-level=low`, `docker compose config --quiet` e `git diff --check`. A auditoria encontrou zero vulnerabilidades. CI `PENDENTE` em Node 22/24. Nenhum teste foi adicionado ou executado. Os containers não foram iniciados neste ambiente.
+Verificações executadas: `npm run build`, `npm run lint`, `npm audit --audit-level=low`, `docker compose config --quiet` e `git diff --check`. A auditoria encontrou zero vulnerabilidades. CI `38197790021` passou em Node 22/24 nos mesmos checks estáticos. Nenhum teste foi adicionado ou executado. Os containers não foram iniciados neste ambiente.
 
 Limitações restantes: ainda não há suíte de testes; rate limits usam memória local e não compartilham contadores entre réplicas; não há fluxo de recuperação de senha nem revogação imediata de tokens antes do vencimento.
 
