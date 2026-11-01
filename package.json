@@ -39,5 +39,8 @@
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.1"
+  },
+  "overrides": {
+    "body-parser": "^2.4.0"
   }
 }
