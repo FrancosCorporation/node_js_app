@@ -41,6 +41,7 @@
     "typescript-eslint": "^8.71.1"
   },
   "overrides": {
-    "body-parser": "^2.4.0"
+    "body-parser": "^2.4.0",
+    "ip-address": "^10.7.4"
   }
 }
